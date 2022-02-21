@@ -1,17 +1,16 @@
-# full stack wordpress for everyone with docker compose
+# full stack webserver for everyone with docker compose
 
-If You want to have wordpress website at short time; Full stack WordPress (webserver apache2(httpd), proxy nginx, database admin phpmyadmin, database mariadb/mysql, ssl letsencrypt, redis cache and backup) with Docker Compose.
+If You want to have a website at short time; Full stack webserver (php-fpm, apache2(httpd), proxy nginx, database admin phpmyadmin, database mariadb/mysql, ssl letsencrypt and backup) with Docker Compose.
 Plus, Docker manage by Portainer.
 
 With this project you can quickly run the following:
 
-- [wordPress (php-fpm)](https://hub.docker.com/_/wordpress/)
+- [php (php-fpm)](https://hub.docker.com/_/php?tab=tags&page=1&name=fpm/)
 - [webserver (apache2/httpd)](https://hub.docker.com/_/httpd)
 - [proxy (nginx)](https://hub.docker.com/_/nginx)
 - [certbot (letsencrypt)](https://hub.docker.com/r/certbot/certbot)
 - [phpMyAdmin](https://hub.docker.com/r/phpmyadmin/phpmyadmin/)
 - [database](https://hub.docker.com/_/mariadb)
-- [redis](https://hub.docker.com/_/redis)
 - [backup](https://hub.docker.com/r/futurice/docker-volume-backup)
 
 For certbot (letsencrypt) certificate:
@@ -41,7 +40,7 @@ for
 
 download with
 ```
-git clone https://github.com/damalis/full-stack-wordpress-for-everyone-with-docker-compose.git
+git clone https://github.com/damalis/full-stack-webserver-for-everyone-with-docker-compose.git
 ```
 
 ```
@@ -64,7 +63,7 @@ Make sure to [add your user to the `docker` group](https://docs.docker.com/insta
 
 download with
 ```
-git clone https://github.com/damalis/full-stack-wordpress-for-everyone-with-docker-compose.git
+git clone https://github.com/damalis/full-stack-webserver-for-everyone-with-docker-compose.git
 ```
 Open a terminal and `cd` to the folder in which `docker-compose.yml` is saved and run:
 
@@ -76,7 +75,7 @@ Copy the example environment into `.env`
 cp env.example .env
 ```
 
-Edit the `.env` file to change values of ```LOCAL_TIMEZONE```, ```DOMAIN_NAME```, ```DIRECTORY_PATH```, ```LETSENCRYPT_EMAIL```, ```WORDPRESS_DB_USER```, ```WORDPRESS_DB_PASSWORD```, ```WORDPRESS_DB_NAME```, ```WORDPRESS_TABLE_PREFIX```, ```MYSQL_ROOT_PASSWORD```, ```PMA_CONTROLUSER```, ```PMA_CONTROLPASS```, ```PMA_HTPASSWD_USERNAME``` and ```PMA_HTPASSWD_PASSWORD```.
+Edit the `.env` file to change values of ```LOCAL_TIMEZONE```, ```DOMAIN_NAME```, ```DIRECTORY_PATH```, ```LETSENCRYPT_EMAIL```, ```DB_USER```, ```DB_PASSWORD```, ```DB_NAME```, ```TABLE_PREFIX```, ```MYSQL_ROOT_PASSWORD```, ```PMA_CONTROLUSER```, ```PMA_CONTROLPASS```, ```PMA_HTPASSWD_USERNAME``` and ```PMA_HTPASSWD_PASSWORD```.
 
 and
 
@@ -99,7 +98,7 @@ change value of $cfg['blowfish_secret'] in ```./phpmyadmin/config.secret.inc``` 
 
 Firstly: will create external volume
 ```
-docker volume create --driver local --opt type=none --opt device=/home/ubuntu/full-stack-wordpress-for-everyone-with-docker-compose/certbot --opt o=bind certbot-etc
+docker volume create --driver local --opt type=none --opt device=/home/ubuntu/full-stack-webserver-for-everyone-with-docker-compose/certbot --opt o=bind certbot-etc
 ```
 ```
 docker-compose up -d
@@ -175,33 +174,11 @@ pm.max_requests = 1000
 Or you should make changes custom host configurations then must restart service
 
 ```
-docker-compose restart wordpress
+docker-compose restart html
 ```
 
-add and/or remove wordpress site folders and files with any ftp client program in ```./wordpress``` folder.
-<br />You can also visit `https://example.com` to access website after starting the containers.
-
-#### Redis Plugin
-
-add and enable [Redis Cache](https://wordpress.org/plugins/redis-cache/) plugin.
-
-must add below code in wp-config.php file.
-```
-define('WP_REDIS_HOST', 'redis');
-define('WP_CACHE_KEY_SALT', 'wp-docker-7f1a7682-9aec-4d4b-9a10-46bbadec41ba');
-define('WP_REDIS_PREFIX', $_SERVER['HTTP_HOST']);
-define('WP_REDIS_CONFIG', [
-	'prefix' => getenv('WP_REDIS_PREFIX') ?: null,
-    'timeout' => 0.5,
-    'read_timeout' => 0.5,
-    'async_flush' => true,
-    'compression' => 'zstd',
-    'serializer' => 'igbinary',
-    'split_alloptions' => true,
-    'debug' => false,
-    'save_commands' => false,
-]);
-```
+add and/or remove base html/php-fpm themes, plugins or custom code folders and files with any ftp client program to ./html folder
+<br /><br />contains your website’s base configuration details, such as database connection information. You can set custom configuration for your website in this file.
 
 ### phpMyAdmin
 
