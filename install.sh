@@ -210,7 +210,7 @@ if [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
 	docker volume create --driver local --opt type=none --opt device=`pwd`/certbot --opt o=bind certbot-etc > /dev/null
 	# installing wordpress and the other services
 	docker-compose up -d & export pid=$!
-	echo "wordpress and the other services installing proceeding..."
+	echo "html and the other services installing proceeding..."
 	echo ""
 	wait $pid
 	if [ $? -eq 0 ]
@@ -235,7 +235,7 @@ if [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
 		fi
 	else
 		echo ""
-		echo "Error! could not installed wordpress and the other services with docker-compose" >&2
+		echo "Error! could not installed html and the other services with docker-compose" >&2
 		exit 1
 	fi
 else
