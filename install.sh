@@ -4,7 +4,7 @@ clear
 echo ""
 echo "================================================================="
 echo "|  								|"
-echo "|  full-stack-wordpress-for-everyone-with-docker-compose Setup  |"
+echo "|  full-stack-webserver-for-everyone-with-docker-compose Setup  |"
 echo "|	 		  by Erdal ALTIN			|"
 echo "|  								|"
 echo "================================================================="
@@ -208,7 +208,7 @@ sed -i "s@directory_path@$(pwd)@" .env
 if [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
     # Firstly: create external volume
 	docker volume create --driver local --opt type=none --opt device=`pwd`/certbot --opt o=bind certbot-etc > /dev/null
-	# installing wordpress and the other services
+	# installing html and the other services
 	docker-compose up -d & export pid=$!
 	echo "html and the other services installing proceeding..."
 	echo ""
