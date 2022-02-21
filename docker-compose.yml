@@ -7,7 +7,7 @@ services:
             - database
             - webserver
         image: '${PHP_IMAGE_NAME}'
-        container_name: 'html-${PHP_IMAGE_NAME}'
+        container_name: 'html-php'
         networks:
             - backend            
         volumes:
