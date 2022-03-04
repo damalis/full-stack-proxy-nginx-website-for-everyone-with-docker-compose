@@ -4,7 +4,7 @@ clear
 echo ""
 echo "================================================================="
 echo "|  								|"
-echo "|  full-stack-webserver-for-everyone-with-docker-compose Setup  |"
+echo "|  full-stack-webserver-for-everyone-with-docker-compose  |"
 echo "|	 		  by Erdal ALTIN			|"
 echo "|  								|"
 echo "================================================================="
@@ -120,8 +120,9 @@ done
 echo "Ok."
 
 db_username=""
+db_regex="^[0-9a-zA-Z\$_]{6,}$"
 read -p 'Enter Database Username(at least 6 characters): ' db_username
-while [ -z $db_username ] || [[ $(echo ${#db_username}) -lt 6 ]]
+while [[ ! $db_username =~ $db_regex ]]
 do
 	echo "Try again"
 	read -p 'Enter Database Username(at least 6 characters): ' db_username
@@ -130,8 +131,9 @@ done
 echo "Ok."
 
 db_password=""
+password_regex="^[a-zA-Z0-9\._-]{6,}$"
 read -p 'Enter Database Password(at least 6 characters): ' db_password
-while [ -z $db_password ] || [[ $(echo ${#db_password}) -lt 6 ]]
+while [[ ! $db_password =~ $password_regex ]]
 do
 	echo "Try again"
 	read -p 'Enter Database Password(at least 6 characters): ' db_password
@@ -141,7 +143,7 @@ echo "Ok."
 
 db_name=""
 read -p 'Enter Database Name(at least 6 characters): ' db_name
-while [ -z $db_name ] || [[ $(echo ${#db_name}) -lt 6 ]]
+while [[ ! $db_name =~ $db_regex ]]
 do
 	echo "Try again"
 	read -p 'Enter Database Name(at least 6 characters): ' db_name
@@ -149,9 +151,20 @@ do
 done
 echo "Ok."
 
+db_table_prefix=""
+db_table_prefix_regex="^[0-9a-zA-Z\$_]{3,}$"
+read -p 'Enter Database Table Prefix(at least 3 characters, e.g. : wp_): ' db_table_prefix
+while [[ ! $db_table_prefix =~ $db_table_prefix_regex ]]
+do
+	echo "Try again"
+	read -p 'Enter Database Table Prefix(at least 3 characters, e.g. : wp_): ' db_table_prefix
+	sleep 1
+done
+echo "Ok."
+
 mysql_root_password=""
 read -p 'Enter MariaDb/Mysql Root Password(at least 6 characters): ' mysql_root_password
-while [ -z $mysql_root_password ] || [[ $(echo ${#mysql_root_password}) -lt 6 ]]
+while [[ ! $mysql_root_password =~ $password_regex ]]
 do
 	echo "Try again"
 	read -p 'Enter MariaDb/Mysql Root Password(at least 6 characters): ' mysql_root_password
@@ -161,7 +174,7 @@ echo "Ok."
 
 pma_username=""
 read -p 'Enter PhpMyAdmin Username(at least 6 characters): ' pma_username
-while [ -z $pma_username ] || [[ $(echo ${#pma_username}) -lt 6 ]]
+while [[ ! $pma_username =~ $db_regex ]]
 do
 	echo "Try again"
 	read -p 'Enter PhpMyAdmin Username(at least 6 characters): ' pma_username
@@ -171,11 +184,21 @@ echo "Ok."
 
 pma_password=""
 read -p 'Enter PhpMyAdmin Password(at least 6 characters): ' pma_password
-while [ -z $pma_password ] || [[ $(echo ${#pma_password}) -lt 6 ]]
+while [[ ! $pma_password =~ $password_regex ]]
 do
 	echo "Try again"
 	read -p 'Enter PhpMyAdmin Password(at least 6 characters): ' pma_password
 	sleep 1
+done
+echo "Ok."
+
+local_timezone=""
+local_timezone_regex="^[a-zA-Z0-9\/\+\-_]{1,}$"
+read -p 'Enter container local Timezone(e.g. : America/Los_Angeles, to see the other timezones, https://docs.diladele.com/docker/timezones.html): ' local_timezone
+while [[ ! $local_timezone =~ $local_timezone_regex ]]
+do
+	echo "Try again"
+	read -p 'Enter container local Timezone(e.g. : America/Los_Angeles. to see the other local timezones, https://docs.diladele.com/docker/timezones.html): ' local_timezone
 done
 echo "Ok."
 
@@ -200,10 +223,12 @@ sed -i 's/email@domain.com/'$email'/g' .env
 sed -i 's/db_username/'$db_username'/g' .env
 sed -i 's/db_password/'$db_password'/g' .env
 sed -i 's/db_name/'$db_name'/g' .env
+sed -i 's/db_table_prefix/'$db_table_prefix'/g' .env
 sed -i 's/mysql_root_password/'$mysql_root_password'/g' .env
 sed -i 's/pma_username/'$pma_username'/g' .env
 sed -i 's/pma_password/'$pma_password'/g' .env
 sed -i "s@directory_path@$(pwd)@" .env
+sed -i 's/local_timezone/'$local_timezone'/g' .env
 
 if [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
     # Firstly: create external volume
@@ -223,7 +248,12 @@ if [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
 		if [ $? -ne 0 ]; then
 			echo "Error! could not installed portainer" >&2
 			exit 1
-		else
+		else			
+			until [ -n "$(sudo find ./certbot/live -name '$domain_name' 2>/dev/null | head -1)" ]; do
+				echo "waiting for Let's Encrypt certificates for $domain_name"
+				sleep 5s & wait ${!}
+				if sudo [ -d "./certbot/live/$domain_name" ]; then break; fi
+			done			
 			echo ""
 			echo "completed setup"
 			echo ""
