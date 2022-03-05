@@ -1,7 +1,7 @@
 # full stack webserver for everyone with docker compose
 
 If You want to have a website at short time; Full stack webserver (php-fpm, apache2(httpd), proxy nginx, database admin phpmyadmin, database mariadb/mysql, ssl letsencrypt and backup) with Docker Compose.
-Plus, Docker manage by Portainer.
+Plus, manage docker containers with Portainer.
 
 With this project you can quickly run the following:
 
@@ -77,6 +77,8 @@ cp env.example .env
 
 Edit the `.env` file to change values of ```LOCAL_TIMEZONE```, ```DOMAIN_NAME```, ```DIRECTORY_PATH```, ```LETSENCRYPT_EMAIL```, ```DB_USER```, ```DB_PASSWORD```, ```DB_NAME```, ```TABLE_PREFIX```, ```MYSQL_ROOT_PASSWORD```, ```PMA_CONTROLUSER```, ```PMA_CONTROLPASS```, ```PMA_HTPASSWD_USERNAME``` and ```PMA_HTPASSWD_PASSWORD```.
 
+LOCAL_TIMEZONE=[to see local timezones](https://docs.diladele.com/docker/timezones.html)
+
 DIRECTORY_PATH=```pwd``` at command line
 
 and
@@ -143,11 +145,20 @@ To stop and remove all the containers use the`down` command:
 docker-compose down
 ```
 
+to remove portainer container
+```
+docker rm -f $(docker ps -a -q)
+```
+
 Use `-v` if you need to remove the database volume which is used to persist the database:
 
 ```
 docker-compose down -v
 ```
+
+to remove external certbot-etc and portainer volumes
+```
+docker volume rm $(docker volume ls -q)
 
 ### Project from existing source
 
