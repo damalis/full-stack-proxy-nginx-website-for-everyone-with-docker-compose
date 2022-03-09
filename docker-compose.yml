@@ -12,11 +12,11 @@ services:
         volumes:
             - 'html:${WEBSERVER_DOC_ROOT}'
             - type: bind
-              source: ./php-fpm/php/conf.d/security.ini
-              target: '${PHP_FPM_PREFIX}/php/conf.d/security.ini'
+              source: ./php/php/conf.d/security.ini
+              target: '${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini'
             - type: bind
-              source: ./php-fpm/php-fpm.d/z-www.conf
-              target: '${PHP_FPM_PREFIX}/php-fpm.d/z-www.conf'
+              source: ./php/php-fpm.d/z-www.conf
+              target: '${PHP_INI_DIR_PREFIX}/php-fpm.d/z-www.conf'
         hostname: html
         restart: unless-stopped
         ports:
@@ -31,7 +31,7 @@ services:
     webserver:
         depends_on:
             - html
-        image: 'httpd'
+        image: 'httpd:latest'
         container_name: webserver
         networks:
             - backend            
@@ -64,12 +64,12 @@ services:
         restart: unless-stopped        
         environment:
             TZ: '${LOCAL_TIMEZONE}'
-        entrypoint: /bin/sh -c "certbot certonly --webroot --webroot-path /tmp/acme-challenge --rsa-key-size 4096 --non-interactive --agree-tos --no-eff-email --force-renewal --email ${LETSENCRYPT_EMAIL} -d ${DOMAIN_NAME} -d www.${DOMAIN_NAME};
+        entrypoint: /bin/sh -c "certbot certonly --staging --webroot --webroot-path /tmp/acme-challenge --rsa-key-size 4096 --non-interactive --agree-tos --no-eff-email --force-renewal --email ${LETSENCRYPT_EMAIL} -d ${DOMAIN_NAME} -d www.${DOMAIN_NAME};
             trap exit TERM; while :; do certbot renew --dry-run; sleep 12h & wait $${!}; done;"
 
     proxy:
         depends_on:
-            - html
+            - webserver
         image: nginx:stable
         container_name: proxy
         networks:
@@ -85,6 +85,9 @@ services:
             - type: bind
               source: ./proxy/ssl-option/options-ssl-nginx.conf
               target: '${LETSENCRYPT_CONF_PREFIX}/options-ssl-nginx.conf'
+            - type: bind
+              source: ./ssl-proxyconf.sh
+              target: '/tmp/ssl-proxyconf.sh'
             - 'certbot-etc:${LETSENCRYPT_CONF_PREFIX}'
             - '/tmp/acme-challenge:/tmp/acme-challenge'            
         hostname: proxy
@@ -111,16 +114,19 @@ services:
               target: '${PMA_CONF_FOLDER}'
             - type: bind
               source: ./phpmyadmin/apache2/sites-available/default-ssl.conf
-              target: '/etc/apache2/sites-available/default-ssl.conf'
-            - type: bind
-              source: ./phpmyadmin/apache2/sites-available/000-default.conf
-              target: '/etc/apache2/sites-available/000-default.conf'
+              target: '${APACHE_CONFDIR_PREFIX}/sites-available/default-ssl.conf'
             - type: bind
               source: ./phpmyadmin/apache2/ports.conf
-              target: '/etc/apache2/ports.conf'
+              target: '${APACHE_CONFDIR_PREFIX}/ports.conf'
             - type: bind
               source: ./phpmyadmin/ssl-option/options-ssl-apache.conf
               target: '${LETSENCRYPT_CONF_PREFIX}/options-ssl-apache.conf'
+            - type: bind
+              source: ./phpmyadmin/config.user.inc.php
+              target: '${PMA_CONF_FOLDER}/config.user.inc.php'            
+            - type: bind
+              source: ./phpmyadmin/php/conf.d/security.ini
+              target: '${PHP_INI_DIR_PREFIX}/conf.d/security.ini'
             - 'certbot-etc:${LETSENCRYPT_CONF_PREFIX}'
         hostname: phpmyadmin
         ipc: private
@@ -136,14 +142,15 @@ services:
             PMA_CONTROLPASS: '${PMA_CONTROLPASS}'
             MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
             UPLOAD_LIMIT: '${PMA_UPLOAD_LIMIT}'
+            MEMORY_LIMIT: '${PMA_MEMORY_LIMIT}'
             TZ: '${LOCAL_TIMEZONE}'
         labels:            
             - "docker-volume-backup.stop-during-backup=true"
         command: >
-            bash -c "echo ${PMA_HTPASSWD_USERNAME}:phpmyadmin:$$( printf \"%s:%s:%s\" \"${PMA_HTPASSWD_USERNAME}\" \"phpmyadmin\" \"${PMA_HTPASSWD_PASSWORD}\" | md5sum | awk '{print $$1}' ) > /etc/phpmyadmin/.htpasswd 
-            && printf 'AuthType Digest\nAuthName \"phpmyadmin\"\nAuthDigestProvider file\nAuthUserFile /etc/phpmyadmin/.htpasswd\n#Require ssl\nRequire valid-user\n' > /var/www/html/.htaccess 
-            && mkdir -p /var/www/upload && chown www-data:www-data /var/www/upload && chmod a+w /var/www/upload && mkdir -p /var/www/save && a2enmod auth_digest 
-            && chown www-data:www-data /var/www/save && chmod a+w /var/www/save && a2enmod ssl && a2ensite default-ssl && a2dissite 000-default && service apache2 restart && tail -f /dev/null"
+            bash -c "echo ${PMA_HTPASSWD_USERNAME}:phpmyadmin:$$( printf \"%s:%s:%s\" \"${PMA_HTPASSWD_USERNAME}\" \"phpmyadmin\" \"${PMA_HTPASSWD_PASSWORD}\" | md5sum | awk '{print $$1}' ) > ${PMA_CONF_FOLDER}/.htpasswd 
+            && printf 'AuthType Digest\nAuthName \"phpmyadmin\"\nAuthDigestProvider file\nAuthUserFile ${PMA_CONF_FOLDER}/.htpasswd\n#Require ssl\nRequire valid-user\n' > ${WEBSERVER_DOC_ROOT}/.htaccess 
+            && mkdir -p ${WEBSERVER_DOC_ROOT}/../upload && chown www-data:www-data ${WEBSERVER_DOC_ROOT}/../upload && chmod a+w ${WEBSERVER_DOC_ROOT}/../upload && mkdir -p ${WEBSERVER_DOC_ROOT}/../save && a2enmod auth_digest 
+            && chown www-data:www-data ${WEBSERVER_DOC_ROOT}/../save && chmod a+w ${WEBSERVER_DOC_ROOT}/../save && grep -qxF 'ServerName 127.0.0.1' ${APACHE_CONFDIR_PREFIX}/apache2.conf || echo -e '\nServerName 127.0.0.1' >> ${APACHE_CONFDIR_PREFIX}/apache2.conf && a2enmod ssl && a2ensite default-ssl && a2dissite 000-default && service apache2 restart && tail -f /dev/null"
     
     database:
         image: '${DATABASE_IMAGE_NAME}:${DATABASE_VERSION}'
