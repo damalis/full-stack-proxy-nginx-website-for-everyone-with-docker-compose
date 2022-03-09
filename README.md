@@ -1,9 +1,14 @@
 # full stack webserver for everyone with docker compose
 
-If You want to have a website at short time; Full stack webserver (php-fpm, apache2(httpd), proxy nginx, database admin phpmyadmin, database mariadb/mysql, ssl letsencrypt and backup) with Docker Compose.
+If You want to have a wordpress website at short time; 
+
+#### Full stack WordPress:
+<p align="left"> <a href="https://www.php.net" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/github/explore/ccc16358ac4530c6a69b1b80c7223cd2744dea83/topics/php/php.png" alt="php" height="40" width="40"/> </a> <a href="https://mariadb.org/" target="_blank" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/4739304?s=200&v=4" alt="mariadb" height="40" width="40"/> </a> <a href="https://www.nginx.com" target="_blank" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/1412239?s=200&v=4" alt="nginx" height="40" width="40"/> </a> <a href="https://redis.io" target="_blank" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/1529926?s=200&v=4" alt="redis" height="40" width="40"/> </a> 
+ <a href="https://www.phpmyadmin.net/" target="_blank" rel="noreferrer"> <img style="margin: 10px" src="https://avatars.githubusercontent.com/u/1351977?s=200&v=4" alt="phpmyadmin" height="40" width="40"/> </a> <a href="https://www.apache.org/" target="_blank" rel="noreferrer"> <img style="margin: 10px" src="https://avatars.githubusercontent.com/u/47359?s=200&v=4" alt="apache" height="40" width="40"/> </a> <a href="https://certbot.eff.org/" target="_blank" rel="noreferrer"> <img style="margin: 10px" src="https://avatars.githubusercontent.com/u/17889013?s=200&v=4" alt="certbot" height="40" width="40"/> </a> <a href="https://letsencrypt.org/" target="_blank" rel="noreferrer"> <img style="margin: 10px" src="https://avatars.githubusercontent.com/u/9289019?s=200&v=4" alt="letsencrypt" height="40" width="40"/> </a> <a href="https://www.portainer.io/?hsLang=en" target="_blank" rel="noreferrer"> <img style="margin: 10px" src="https://avatars.githubusercontent.com/u/22225832?s=200&v=4" alt="portainer" height="40" width="40"/> </a> <a href="https://docs.docker.com/compose/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/docker/compose/v2/logo.png" alt="docker compose" width="40" height="40" width="40"/> </a> <a href="https://www.gnu.org/software/bash/" target="_blank" rel="noreferrer"> <img style="margin: 10px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/bash/bash.png" alt="Bash" height="40" width="40" /> </a> </p>
+
 Plus, manage docker containers with Portainer.
 
-With this project you can quickly run the following:
+#### With this project you can quickly run the following:
 
 - [php (php-fpm)](https://hub.docker.com/_/php?tab=tags&page=1&name=fpm)
 - [webserver (apache2/httpd)](https://hub.docker.com/_/httpd)
@@ -13,11 +18,19 @@ With this project you can quickly run the following:
 - [database](https://hub.docker.com/_/mariadb)
 - [backup](https://hub.docker.com/r/futurice/docker-volume-backup)
 
-For certbot (letsencrypt) certificate:
+#### For certbot (letsencrypt) certificate:
 
 - [Set DNS configuration of your domain name](https://support.google.com/a/answer/48090?hl=en)
 
-Contents:
+#### IPv4 Firewall
+Create rules to open ports to the internet, or to a specific IPv4 address or range.
+
+- http: 80
+- https: 443
+- portainer: 9001
+- phpmyadmin: 9090
+
+#### Contents:
 
 - [Auto Configuration and Installation](#automatic)
 - [Requirements](#requirements)
@@ -25,25 +38,20 @@ Contents:
 - [Installation](#installation)
 - [Usage](#usage)
 
-## IPv4 Firewall
-Create rules to open ports to the internet, or to a specific IPv4 address or range.
-
-for
-- http: 80
-- https: 443
-- portainer: 9001
-- phpmyadmin: 9090
-
 ## Automatic
 
 ### Exec install shell script for auto installation and configuration
 
 download with
+
 ```
 git clone https://github.com/damalis/full-stack-webserver-for-everyone-with-docker-compose.git
 ```
 
+Open a terminal and `cd` to the folder in which `docker-compose.yml` is saved and run:
+
 ```
+cd full-stack-wordpress-for-everyone-with-docker-compose
 chmod +x install.sh
 ./install.sh
 ```
@@ -62,10 +70,16 @@ Make sure to [add your user to the `docker` group](https://docs.docker.com/insta
 ## Configuration
 
 download with
+
 ```
 git clone https://github.com/damalis/full-stack-webserver-for-everyone-with-docker-compose.git
 ```
+
 Open a terminal and `cd` to the folder in which `docker-compose.yml` is saved and run:
+
+```
+cd full-stack-wordpress-for-everyone-with-docker-compose
+```
 
 ### Manual Configuration
 
@@ -86,24 +100,25 @@ and
 ```
 cp ./proxy/conf.d/proxy.sample.conf ./proxy/conf.d/proxy.conf
 ```
+
 change example.com to your domain name in ```./proxy/conf.d/proxy.conf``` file.
+
 ```
 cp ./phpmyadmin/apache2/sites-available/default-ssl.sample.conf ./phpmyadmin/apache2/sites-available/default-ssl.conf
 ```
+
 change example.com to your domain name in ```./phpmyadmin/apache2/sites-available/default-ssl.conf``` file.
-
-rename filename ```cp ./phpmyadmin/config.sample.inc.php ./phpmyadmin/config.inc.php```.
-
-change value of $cfg['blowfish_secret'] in ```./phpmyadmin/config.secret.inc``` file.
 
 ## Installation
 
 ### Manual Installation
 
 Firstly: will create external volume
+
 ```
 docker volume create --driver local --opt type=none --opt device=/home/ubuntu/full-stack-webserver-for-everyone-with-docker-compose/certbot --opt o=bind certbot-etc
 ```
+
 ```
 docker-compose up -d
 ```
@@ -117,6 +132,7 @@ For convenience you may add a new entry into your hosts file.
 ```
 docker-compose -f portainer-docker-compose.yml -p portainer up -d 
 ```
+
 manage docker with [Portainer](https://www.portainer.io/solutions/docker) is the definitive container management tool for Docker, Docker Swarm with it's highly intuitive GUI and API. 
 
 You can also visit `https://example.com:9001` to access portainer after starting the containers.
@@ -145,7 +161,7 @@ To stop and remove all the containers use the`down` command:
 docker-compose down
 ```
 
-to remove portainer container
+to remove portainer container and the other containers
 ```
 docker rm -f $(docker ps -a -q)
 ```
@@ -156,7 +172,7 @@ Use `-v` if you need to remove the database volume which is used to persist the 
 docker-compose down -v
 ```
 
-to remove external certbot-etc and portainer volumes
+to remove external certbot-etc and portainer and the other volumes
 ```
 docker volume rm $(docker volume ls -q)
 
