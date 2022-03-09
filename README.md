@@ -123,7 +123,7 @@ docker volume create --driver local --opt type=none --opt device=/home/ubuntu/fu
 docker-compose up -d
 ```
 
-The containers are now built and running. You should be able to access the WordPress installation with the configured IP in the browser address. `https://example.com`.
+The containers are now built and running. You should be able to access the Webserver with the configured IP in the browser address. `https://example.com`.
 
 For convenience you may add a new entry into your hosts file.
 
