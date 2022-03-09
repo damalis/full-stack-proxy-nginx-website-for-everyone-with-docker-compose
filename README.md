@@ -141,7 +141,7 @@ You can also visit `https://example.com:9001` to access portainer after starting
 
 ### Starting containers
 
-You can start the containers with the 'up' command in daemon mode (by adding '-d' as an argument) or by using the `start` command:
+You can start the containers with the `up` command in daemon mode (by adding `-d` as an argument) or by using the `start` command:
 
 ```
 docker-compose start
@@ -155,7 +155,7 @@ docker-compose stop
 
 ### Removing containers
 
-To stop and remove all the containers use the 'down' command:
+To stop and remove all the containers use the `down` command:
 
 ```
 docker-compose down
@@ -166,15 +166,17 @@ to remove portainer container and the other containers
 docker rm -f $(docker ps -a -q)
 ```
 
-Use '-v' if you need to remove the database volume which is used to persist the database:
+Use `-v` if you need to remove the database volume which is used to persist the database:
 
 ```
 docker-compose down -v
 ```
 
 to remove external certbot-etc and portainer and the other volumes
+
 ```
 docker volume rm $(docker volume ls -q)
+```
 
 ### Project from existing source
 
