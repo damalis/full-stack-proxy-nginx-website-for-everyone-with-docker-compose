@@ -191,6 +191,7 @@ do
 	sleep 1
 	: ${local_timezone:=America/Los_Angeles}
 done
+local_timezone=${local_timezone//[\/]/\\\/}
 echo "Ok."
 
 read -p "Apply changes (y/n)? " choice
