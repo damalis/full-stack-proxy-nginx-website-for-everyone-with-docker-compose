@@ -1,4 +1,4 @@
-# # [full stack webserver for everyone with docker compose](https://github.com/damalis/full-stack-webserver-for-everyone-with-docker-compose)
+# [full stack webserver for everyone with docker compose](https://github.com/damalis/full-stack-webserver-for-everyone-with-docker-compose)
 
 If You want to have a webserver at short time; 
 
