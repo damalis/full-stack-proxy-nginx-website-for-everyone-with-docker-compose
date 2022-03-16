@@ -124,7 +124,7 @@ db_regex="^[0-9a-zA-Z\$_]{6,}$"
 read -p 'Enter Database Username(at least 6 characters): ' db_username
 while [[ ! $db_username =~ $db_regex ]]
 do
-	echo "Try again"
+	echo "Try again (can only contain numerals 0-9, basic Latin letters, both lowercase and uppercase, dollar sign and underscore)"
 	read -p 'Enter Database Username(at least 6 characters): ' db_username
 	sleep 1
 done
@@ -135,7 +135,7 @@ password_regex="^[a-zA-Z0-9\._-]{6,}$"
 read -p 'Enter Database Password(at least 6 characters): ' db_password
 while [[ ! $db_password =~ $password_regex ]]
 do
-	echo "Try again"
+	echo "Try again (can only contain numerals 0-9, basic Latin letters, both lowercase and uppercase, dot, underscore and minus sign)"
 	read -p 'Enter Database Password(at least 6 characters): ' db_password
 	sleep 1
 done
@@ -145,7 +145,7 @@ db_name=""
 read -p 'Enter Database Name(at least 6 characters): ' db_name
 while [[ ! $db_name =~ $db_regex ]]
 do
-	echo "Try again"
+	echo "Try again (can only contain numerals 0-9, basic Latin letters, both lowercase and uppercase, dollar sign and underscore)"
 	read -p 'Enter Database Name(at least 6 characters): ' db_name
 	sleep 1
 done
@@ -186,7 +186,7 @@ read -p 'Enter container local Timezone(default : America/Los_Angeles, to see th
 : ${local_timezone:=America/Los_Angeles}
 while [[ ! $local_timezone =~ $local_timezone_regex ]]
 do
-	echo "Try again"
+	echo "Try again (can only contain numerals 0-9, basic Latin letters, both lowercase and uppercase, positive, minus sign and underscore)"
 	read -p 'Enter container local Timezone(default : America/Los_Angeles, to see the other local timezones, https://docs.diladele.com/docker/timezones.html): ' local_timezone
 	sleep 1
 	: ${local_timezone:=America/Los_Angeles}
