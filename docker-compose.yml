@@ -112,9 +112,6 @@ services:
             - frontend
         volumes:
             - type: bind
-              source: ./phpmyadmin
-              target: '${PMA_CONF_FOLDER}'
-            - type: bind
               source: ./phpmyadmin/apache2/sites-available/default-ssl.conf
               target: '${APACHE_CONFDIR_PREFIX}/sites-available/default-ssl.conf'
             - type: bind
@@ -128,7 +125,7 @@ services:
               target: '${PMA_CONF_FOLDER}/config.user.inc.php'
             - type: bind
               source: ./phpmyadmin/config.secret.inc.php
-              target: '${PMA_CONF_FOLDER}/config.secret.inc.php'			  
+              target: '${PMA_CONF_FOLDER}/config.secret.inc.php'
             - type: bind
               source: ./phpmyadmin/php/conf.d/security.ini
               target: '${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini'
