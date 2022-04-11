@@ -27,7 +27,7 @@ services:
             TZ: '${LOCAL_TIMEZONE}'
         labels:            
             - 'docker-volume-backup.stop-during-backup=true'
-        command: "sed -i 's/DB_USER/${DB_USER}/; s/DB_PASSWORD/${DB_PASSWORD}/; s/DB_NAME/${DB_NAME}/ ${WEBSERVER_DOC_ROOT}/index.php && php-fpm"
+        command: "sed -i 's/DB_USER/${DB_USER}/; s/DB_PASSWORD/${DB_PASSWORD}/; s/DB_NAME/${DB_NAME}/' ${WEBSERVER_DOC_ROOT}/index.php && php-fpm"
 
     webserver:
         depends_on:
