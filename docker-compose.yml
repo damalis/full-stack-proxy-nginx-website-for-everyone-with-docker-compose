@@ -69,7 +69,7 @@ services:
             && trap exit TERM && while :; do certbot renew --dry-run; sleep 12h & wait $${!}; done;"
 
     proxy:
-        depens_on:
+        depends_on:
             - html
         image: nginx:stable
         container_name: proxy
