@@ -120,7 +120,7 @@ docker-compose up -d
 then reloading for proxy ssl configuration
 
 ```
-docker container restart <proxy_container_id>
+docker container restart proxy
 ```
 
 The containers are now built and running. You should be able to access the Webserver with the configured IP in the browser address. `https://example.com`.
@@ -130,6 +130,7 @@ For convenience you may add a new entry into your hosts file.
 ### Installation Portainer
 
 ```
+docker volume create portainer_data
 docker-compose -f portainer-docker-compose.yml -p portainer up -d 
 ```
 
@@ -207,7 +208,7 @@ pm.max_requests = 1000
 Or you should make changes custom host configurations then must restart service
 
 ```
-docker container restart <html_container_id>
+docker container restart web
 ```
 
 add and/or remove base html/php-fpm themes, plugins or custom code folders and files with any ftp client program to ./html folder
