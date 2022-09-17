@@ -23,6 +23,7 @@ services:
             - '9000:80'
         links:
             - database
+            - redis
         environment:
             TZ: '${LOCAL_TIMEZONE}'
         labels:            
@@ -180,7 +181,30 @@ services:
             TZ: '${LOCAL_TIMEZONE}'
         labels:            
             - "docker-volume-backup.stop-during-backup=true"
-        command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password'        
+        command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password'
+        
+    redis:
+        image: 'redis:latest'
+        container_name: redis
+        networks:
+            - backend
+        volumes:
+            - 'dtredis:/data'
+            - type: bind
+              source: ./redis
+              target: '${REDIS_CONF_PREFIX}/redis'
+        hostname: redis
+        sysctls:
+            - net.core.somaxconn=512
+        restart: unless-stopped
+        ports:
+            - '6379:6379'
+        environment:
+            ALLOW_EMPTY_PASSWORD: 'yes'
+            TZ: '${LOCAL_TIMEZONE}'
+        labels:            
+            - "docker-volume-backup.stop-during-backup=true"
+        command: "redis-server ${REDIS_CONF_PREFIX}/redis/redis.conf"
     
     backup:
         image: 'futurice/docker-volume-backup'
@@ -216,6 +240,8 @@ volumes:
             o: bind
     db:
         name: ${DATABASE_CONT_NAME}-data
+    dtredis:
+        name: redis-data
     certbot-etc:
         external:
             name: certbot-etc        
