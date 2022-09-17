@@ -222,7 +222,7 @@ if [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
 	docker volume create --driver local --opt type=none --opt device=`pwd`/certbot --opt o=bind certbot-etc > /dev/null
 	# installing html and the other services
 	docker-compose up -d & export pid=$!
-	echo "html and the other services installing proceeding..."
+	echo "web and the other services installing proceeding..."
 	echo ""
 	wait $pid
 	if [ $? -eq 0 ]
