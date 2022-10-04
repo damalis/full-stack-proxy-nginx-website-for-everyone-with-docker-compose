@@ -1,6 +1,6 @@
 # [full stack proxy nginx Website for everyone with docker compose](https://github.com/damalis/full-stack-proxy-nginx-website-for-everyone-with-docker-compose)
 
-If You want to have a Website at short time; 
+If You want to build Website at short time;
 
 #### Full stack Proxy Nginx Website:
 <p align="left"> <a href="https://www.php.net" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/github/explore/ccc16358ac4530c6a69b1b80c7223cd2744dea83/topics/php/php.png" alt="php" height="40" width="40"/> </a>&nbsp;&nbsp;&nbsp; <a href="https://mariadb.org/" target="_blank" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/4739304?s=200&v=4" alt="mariadb" height="40" width="40"/> </a>&nbsp;&nbsp;&nbsp; <a href="https://redis.io" target="_blank" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/1529926?s=200&v=4" alt="redis" height="40" width="40"/> </a>&nbsp;&nbsp;&nbsp; <a href="https://www.nginx.com" target="_blank" rel="noreferrer"> <img src="https://avatars.githubusercontent.com/u/1412239?s=200&v=4" alt="nginx" height="40" width="40"/> </a>&nbsp;&nbsp;&nbsp;  
@@ -82,7 +82,7 @@ Open a terminal and `cd` to the folder in which `docker-compose.yml` is saved an
 cd full-stack-proxy-nginx-website-for-everyone-with-docker-compose
 ```
 
-### Manual Configuration
+### Manual
 
 Copy the example environment into `.env`
 
@@ -106,7 +106,7 @@ change example.com to your domain name in ```./phpmyadmin/apache2/sites-availabl
 
 ## Installation
 
-### Manual Installation
+### Manual
 
 Firstly: will create external volume
 
@@ -239,13 +239,19 @@ The first authorize screen(htpasswd;username or password) and phpmyadmin login s
 
 This will back up the all files and folders, once per day, and write it to ./backups with a filename like backup-2022-02-07T16-51-56.tar.gz 
 
-#### example for crontab file
+#### example for crontab file on the host machine
 
 ##### # old docker backup folder remove
-50 23 * * * find /home/ubuntu/${DIRECTORY_PATH}/backups/backup* -type f -mtime +1 | xargs rm
 
-##### # backup exclude website, backups folders in /home/ubuntu/${DIRECTORY_PATH}
-00 01 * * * tar -czvf /home/ubuntu/${DIRECTORY_PATH}/backups/'backup-example.com-'$(date +"\%Y-\%m-\%dT\%H-\%M-\%S")'.tar.gz' --exclude='backups' /home/ubuntu/${DIRECTORY_PATH}
+```
+50 23 * * * find ${DIRECTORY_PATH}/backups/backup* -type f -mtime +1 | xargs rm
+```
+
+##### # backup exclude website, backups folders in ${DIRECTORY_PATH}
+
+```
+00 01 * * * tar -czvf ${DIRECTORY_PATH}/backups/'backup-example.com-'$(date +"\%Y-\%m-\%dT\%H-\%M-\%S")'.tar.gz' --exclude='backups' ${DIRECTORY_PATH}
+```
 
 [CronHowto](https://help.ubuntu.com/community/CronHowto)
 							 
