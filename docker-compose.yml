@@ -31,6 +31,9 @@ services:
             retries: 6
             start_period: 60s
         environment:
+            DB_USER: '${DB_USER}'
+            DB_PASSWORD: '${DB_PASSWORD}'
+            DB_NAME: '${DB_NAME}'
             TZ: '${LOCAL_TIMEZONE}'
         labels:            
             - 'docker-volume-backup.stop-during-backup=true'
