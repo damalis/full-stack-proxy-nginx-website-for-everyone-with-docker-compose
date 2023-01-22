@@ -17,6 +17,9 @@ services:
             - type: bind
               source: ./php-fpm/php-fpm.d/z-www.conf
               target: '${PHP_INI_DIR_PREFIX}/php-fpm.d/z-www.conf'
+            - type: bind
+              source: ./packagecheck.sh
+              target: '/tmp/packagecheck.sh'
         hostname: website
         restart: unless-stopped
         ports:
@@ -38,7 +41,7 @@ services:
         labels:            
             - 'docker-volume-backup.stop-during-backup=true'
         command: >
-            bash -c "apt-get -y update && apt-get install -y libicu-dev gettext-base && docker-php-ext-install mysqli intl; pecl install -o -f redis && rm -rf /tmp/pear && docker-php-ext-enable redis; 
+            bash -c "apt-get -y update && sh /tmp/packagecheck.sh 'gettext-base' && curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s intl mysqli && pecl install -o -f redis && rm -rf /tmp/pear && docker-php-ext-enable redis; 
             envsubst '$${DB_USER},$${DB_PASSWORD},$${DB_NAME}' < ${WEBSERVER_DOC_ROOT}/index.php.template > ${WEBSERVER_DOC_ROOT}/index.php && grep -qe 'date.timezone = ${LOCAL_TIMEZONE}' ${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini || echo 'date.timezone = ${LOCAL_TIMEZONE}' >> ${PHP_INI_DIR_PREFIX}/php/conf.d/security.ini; php-fpm"
             
     webserver:
@@ -189,7 +192,7 @@ services:
             - "docker-volume-backup.stop-during-backup=true"
             - "docker-volume-backup.archive-pre=/bin/sh -c 'mysqldump -uroot -p${MYSQL_ROOT_PASSWORD} --all-databases > /tmp/backup/db_backup_data.sql'"
             - "docker-volume-backup.exec-label=database"
-        command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password'
+        command: bash -c "apt-get -y update && apt-get install -y gettext-base && export PMA_CONTROLUSER=${PMA_CONTROLUSER} export PMA_CONTROLPASS=${PMA_CONTROLPASS} && envsubst '$$PMA_CONTROLUSER,$$PMA_CONTROLPASS' < /docker-entrypoint-initdb.d/create_tables.sql.template > /docker-entrypoint-initdb.d/create_tables.sql && docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password"
         
     redis:
         image: 'redis:latest'
