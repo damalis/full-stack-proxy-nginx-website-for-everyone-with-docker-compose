@@ -5,7 +5,7 @@ import std;
 backend default {
     .host = "webserver";
     .port = "90";
-	.connect_timeout = 2s;
+    .connect_timeout = 2s;
 }
 
 # Add hostnames, IP addresses and subnets that are allowed to purge content
@@ -117,7 +117,7 @@ sub vcl_recv {
     ) {
         set req.http.X-Cacheable = "NO:Logged in/Got Sessions";
         if(req.http.X-Requested-With == "XMLHttpRequest") {
-		    set req.http.X-Cacheable = "NO:Ajax";
+			set req.http.X-Cacheable = "NO:Ajax";
         }
         return(pass);
     }
